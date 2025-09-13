@@ -21,7 +21,7 @@ A modern web application that allows users to create and chat with AI-powered ch
 
 ## Getting Started
 
-### Installation
+### Local Development
 
 1. Clone the repository:
 ```bash
@@ -40,6 +40,43 @@ npm run dev
 ```
 
 4. Open [http://localhost:5173](http://localhost:5173) in Chrome
+
+### 🚀 Deployment to Netlify
+
+#### Option 1: Deploy from GitHub (Recommended)
+
+1. **Connect to Netlify**:
+   - Go to [Netlify](https://netlify.com)
+   - Sign in with your GitHub account
+   - Click "New site from Git"
+
+2. **Import from GitHub**:
+   - Choose "Deploy with GitHub"
+   - Select the `century909/iachatchromeapi` repository
+   - Click "Deploy site"
+
+3. **Configuration** (Netlify will auto-detect):
+   - Build command: `npm run build`
+   - Publish directory: `dist`
+   - Node version: 18
+
+4. **Enable Chrome AI Features** (Optional):
+   - In Netlify site settings, add environment variable:
+     - Key: `NODE_VERSION`
+     - Value: `18`
+
+#### Option 2: Manual Deploy
+
+1. Build the project:
+```bash
+npm run build
+```
+
+2. Drag and drop the `dist` folder to [Netlify Drop](https://app.netlify.com/drop)
+
+### 🌐 Live Demo
+
+After deployment, your site will be available at a Netlify URL (e.g., `https://amazing-site-name.netlify.app`)
 
 ### Usage
 
