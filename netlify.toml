@@ -5,10 +5,15 @@
 [build.environment]
   NODE_VERSION = "18"
 
+[functions]
+  directory = "netlify/functions"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+  force = false
+  conditions = { "path" = "!/.netlify/functions/*" }
 
 [build.processing]
   skip_processing = false

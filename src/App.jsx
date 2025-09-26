@@ -7,36 +7,8 @@ function App() {
   const [inputMessage, setInputMessage] = useState('')
   const [isSetup, setIsSetup] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [apiAvailable, setApiAvailable] = useState(false)
 
-  // Load character from localStorage
-  useEffect(() => {
-    const savedCharacter = localStorage.getItem('character')
-    if (savedCharacter) {
-      setCharacter(JSON.parse(savedCharacter))
-      setIsSetup(true)
-    }
-    const savedMessages = localStorage.getItem('messages')
-    if (savedMessages) {
-      setMessages(JSON.parse(savedMessages))
-    }
-  }, [])
 
-  // Check API availability
-  useEffect(() => {
-    const checkAPI = async () => {
-      try {
-        if (window.ai && window.ai.languageModel) {
-          setApiAvailable(true)
-        } else {
-          setApiAvailable(false)
-        }
-      } catch (error) {
-        setApiAvailable(false)
-      }
-    }
-    checkAPI()
-  }, [])
 
   // Save character to localStorage
   useEffect(() => {
@@ -67,12 +39,6 @@ function App() {
     setIsLoading(true)
 
     try {
-      if (!apiAvailable) {
-        throw new Error('Chrome AI Prompt API not available. Please ensure you\'re using Chrome with AI features enabled.')
-      }
-
-      const model = await window.ai.languageModel.create()
-
       // Build conversation context
       const conversationHistory = messages.map(msg =>
         `${msg.role === 'user' ? 'User' : character.name}: ${msg.content}`
@@ -86,8 +52,20 @@ User: ${inputMessage}
 
 Respond as ${character.name}:`
 
-      const response = await model.prompt(prompt)
-      const aiResponse = { role: 'ai', content: response }
+      const res = await fetch('/.netlify/functions/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt }),
+      })
+
+      if (!res.ok) {
+        throw new Error('Failed to get AI response')
+      }
+
+      const data = await res.json()
+      const aiResponse = { role: 'ai', content: data.response }
       setMessages(prev => [...prev, aiResponse])
     } catch (error) {
       console.error('AI Error:', error)
@@ -137,11 +115,6 @@ Respond as ${character.name}:`
         <div className="character-info">
           <h2>Chatting with {character.name}</h2>
           <p>{character.background}</p>
-          {!apiAvailable && (
-            <div className="api-warning">
-              ⚠️ Chrome AI Prompt API not available. Please ensure you're using Chrome with AI features enabled.
-            </div>
-          )}
         </div>
         <div className="messages">
           {messages.map((msg, index) => (
